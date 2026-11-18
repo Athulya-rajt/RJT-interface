@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ReconJT Login</title>
+
+    <!-- Bootstrap 5 + Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+      :root {
+        --bg: #0b0f19;
+        --neon: #00ff9c;
+        --text: #d7e6f2;
+        --muted: rgba(215, 230, 242, 0.75);
+        --glass: rgba(255, 255, 255, 0.06);
+        --border: rgba(0, 255, 156, 0.22);
+      }
+
+      html, body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      /* Cyber grid + scanlines */
+      .cyber-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background:
+          radial-gradient(900px 500px at 15% 15%, rgba(0, 255, 156, 0.20), transparent 55%),
+          radial-gradient(700px 400px at 80% 20%, rgba(0, 255, 156, 0.12), transparent 60%),
+          linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.65));
+      }
+
+      .cyber-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0,255,156,0.10) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,255,156,0.10) 1px, transparent 1px);
+        background-size: 54px 54px;
+        transform: perspective(800px) rotateX(62deg) translateY(-140px);
+        transform-origin: center;
+        opacity: 0.35;
+        filter: drop-shadow(0 0 10px rgba(0,255,156,0.15));
+      }
+
+      .cyber-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,0.06),
+          rgba(255,255,255,0.00) 2px,
+          rgba(0,0,0,0.00) 4px
+        );
+        opacity: 0.22;
+        animation: scan 8s linear infinite;
+      }
+
+      @keyframes scan {
+        0% { transform: translateY(-20px); }
+        100% { transform: translateY(20px); }
+      }
+
+      /* Layout */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px 16px;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border);
+        box-shadow:
+          0 18px 60px rgba(0, 0, 0, 0.45),
+          0 0 0 1px rgba(0, 255, 156, 0.08) inset,
+          0 0 40px rgba(0, 255, 156, 0.08);
+        backdrop-filter: blur(14px);
+      }
+
+      .login-card .card-body {
+        padding: 26px 22px;
+      }
+
+      .brand-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 255, 156, 0.10);
+        border: 1px solid rgba(0, 255, 156, 0.28);
+        box-shadow: 0 0 26px rgba(0, 255, 156, 0.18);
+        margin-bottom: 14px;
+      }
+
+      .neon {
+        color: var(--neon);
+        text-shadow: 0 0 18px rgba(0, 255, 156, 0.35);
+      }
+
+      .login-title {
+        font-weight: 900;
+        letter-spacing: 0.2px;
+        margin-bottom: 6px;
+      }
+
+      .login-subtitle {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-bottom: 18px;
+      }
+
+      .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(0, 255, 156, 0.18);
+        color: var(--text);
+        border-radius: 14px;
+      }
+
+      .form-control::placeholder {
+        color: rgba(215, 230, 242, 0.45);
+      }
+
+      .form-control:focus {
+        border-color: rgba(0, 255, 156, 0.55);
+        box-shadow: 0 0 0 0.25rem rgba(0, 255, 156, 0.18);
+      }
+
+      .input-group-text {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(0, 255, 156, 0.18);
+        border-radius: 14px;
+        color: rgba(0, 255, 156, 0.95);
+      }
+
+      .input-group .form-control {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      .input-group:focus-within .input-group-text {
+        border-color: rgba(0, 255, 156, 0.55);
+        box-shadow: 0 0 20px rgba(0, 255, 156, 0.14);
+      }
+
+      .btn-neon {
+        background: linear-gradient(180deg, rgba(0,255,156,1), rgba(0,255,156,0.72));
+        border: 1px solid rgba(0, 255, 156, 0.65);
+        color: #04130d;
+        font-weight: 900;
+        border-radius: 14px;
+        box-shadow: 0 0 28px rgba(0, 255, 156, 0.28);
+        transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .btn-neon:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        box-shadow: 0 0 38px rgba(0, 255, 156, 0.34);
+      }
+
+      .btn-neon:active {
+        transform: translateY(0);
+      }
+
+      .card-footer {
+        background: transparent;
+        border-top: 1px solid rgba(0, 255, 156, 0.12);
+        color: rgba(215, 230, 242, 0.70);
+        padding: 14px 22px;
+        font-size: 0.88rem;
+      }
+
+      .form-label {
+        color: rgba(215, 230, 242, 0.78);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="cyber-bg" aria-hidden="true"></div>
+
+    <div class="page">
+      <div class="login-card">
+        <div class="card-body">
+          <div class="text-center">
+            <div class="brand-icon">
+              <i class="fa-solid fa-shield-virus neon" style="font-size: 1.3rem;"></i>
+            </div>
+            <h1 class="login-title">ReconJT Login</h1>
+            <div class="login-subtitle">Secure Access to Recon Dashboard</div>
+          </div>
+
+          <form method="POST" action="/login">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+               <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  placeholder="Username"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-neon py-2">
+                <i class="fa-solid fa-bolt me-2"></i>Login
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer text-center">
+          Authorized access only
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
+
+ 

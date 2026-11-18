@@ -1,0 +1,705 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Result{% endblock %}</title>
+
+    <!-- Bootstrap 5 + Font Awesome (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+      :root {
+        --bg: #070a12;
+        --panel: rgba(255, 255, 255, 0.04);
+        --border: rgba(0, 255, 120, 0.18);
+        --neon: #27ff77;
+        --text: #d7e6f2;
+        --muted: rgba(215, 230, 242, 0.7);
+      }
+
+      body {
+        background: radial-gradient(1200px 600px at 15% 10%, rgba(39, 255, 119, 0.18), transparent 60%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.35));
+        border-right: 1px solid rgba(0, 255, 120, 0.15);
+        padding: 20px 16px;
+        z-index: 1030;
+      }
+
+      .sidebar .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 8px 18px;
+        border-bottom: 1px solid rgba(0, 255, 120, 0.12);
+        margin-bottom: 18px;
+      }
+
+      .sidebar .brand .logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(39, 255, 119, 0.12);
+        border: 1px solid rgba(39, 255, 119, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 22px rgba(39, 255, 119, 0.25);
+      }
+
+      .sidebar .nav a {
+        color: rgba(215, 230, 242, 0.85);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 12px;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      .sidebar .nav a:hover {
+        border-color: rgba(39, 255, 119, 0.25);
+        background: rgba(39, 255, 119, 0.08);
+        transform: translateY(-1px);
+      }
+
+      .sidebar .nav a.active {
+        border-color: rgba(39, 255, 119, 0.35);
+        background: rgba(39, 255, 119, 0.12);
+        box-shadow: 0 0 24px rgba(39, 255, 119, 0.18);
+      }
+
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 260px;
+        right: 0;
+        height: 64px;
+        background: rgba(10, 14, 26, 0.65);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 255, 120, 0.12);
+        z-index: 1020;
+      }
+
+      .topbar .nav-left {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 18px;
+        gap: 14px;
+        color: rgba(215, 230, 242, 0.9);
+        font-weight: 600;
+      }
+
+      .main {
+        margin-left: 260px;
+        padding-top: 80px;
+        padding-left: 18px;
+        padding-right: 18px;
+        padding-bottom: 40px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid rgba(0, 255, 120, 0.14);
+        border-radius: 16px;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+      }
+
+      .neon {
+        color: var(--neon);
+        text-shadow: 0 0 18px rgba(39, 255, 119, 0.35);
+      }
+
+      .btn-neon {
+        background: linear-gradient(180deg, rgba(39, 255, 119, 1), rgba(39, 255, 119, 0.75));
+        border: 1px solid rgba(39, 255, 119, 0.6);
+        color: #06110a;
+        font-weight: 800;
+        box-shadow: 0 0 26px rgba(39, 255, 119, 0.35);
+      }
+
+      .btn-neon:hover {
+        filter: brightness(1.05);
+        color: #06110a;
+      }
+
+      .btn-outline-neon {
+        border: 1px solid rgba(39, 255, 119, 0.35);
+        color: rgba(39, 255, 119, 0.95);
+        background: rgba(39, 255, 119, 0.06);
+        font-weight: 800;
+      }
+
+      .btn-outline-neon:hover {
+        background: rgba(39, 255, 119, 0.12);
+        color: rgba(39, 255, 119, 1);
+      }
+
+      .stat-card {
+        padding: 18px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(0, 255, 120, 0.14);
+        min-height: 92px;
+      }
+
+      .tabs .tab-btn {
+        color: rgba(215, 230, 242, 0.8);
+        border: 1px solid rgba(0, 255, 120, 0.12);
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        padding: 10px 12px;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tabs .tab-btn:hover {
+        border-color: rgba(39, 255, 119, 0.28);
+        background: rgba(39, 255, 119, 0.08);
+      }
+
+      .tabs .tab-btn.active {
+        border-color: rgba(39, 255, 119, 0.40);
+        background: rgba(39, 255, 119, 0.12);
+        box-shadow: 0 0 20px rgba(39, 255, 119, 0.16);
+      }
+
+      .kv-card {
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(0, 255, 120, 0.12);
+      }
+
+      .kv {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 12px 16px;
+        align-items: start;
+      }
+
+      .k {
+        color: rgba(215,230,242,0.75);
+        font-weight: 700;
+      }
+
+      .v {
+        color: rgba(215,230,242,0.95);
+        font-weight: 600;
+        word-break: break-word;
+      }
+
+      @media (max-width: 992px) {
+        .sidebar { width: 220px; }
+        .topbar { left: 220px; }
+        .main { margin-left: 220px; }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+          border-right: none;
+        }
+        .topbar { position: static; }
+        .main {
+          margin-left: 0;
+          padding-top: 18px;
+        }
+        .kv {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">
+          <i class="fa-solid fa-shield-virus neon"></i>
+        </div>
+        <div>
+          <div style="font-weight:900; line-height:1;">ReconJT-Web</div>
+          <div style="color:rgba(215,230,242,0.7); font-size:0.85rem; margin-top:4px;">Neon Recon Console</div>
+        </div>
+      </div>
+
+     <nav class="nav d-flex flex-column gap-1">
+    <a href="{{ url_for('dashboard') }}">
+        <i class="fa-solid fa-gauge neon"></i> Dashboard
+    </a>
+
+    <a href="{{ url_for('history') }}">
+        <i class="fa-solid fa-clock-rotate-left"></i> History
+    </a>
+
+    <a href="{{ url_for('reports') }}">
+        <i class="fa-solid fa-file-lines"></i> Reports
+    </a>
+
+    <a href="{{ url_for('settings') }}">
+        <i class="fa-solid fa-gear"></i> Settings
+    </a>
+
+    <a href="{{ url_for('about') }}">
+        <i class="fa-regular fa-circle-question"></i> About
+    </a>
+</nav>
+    </aside>
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="nav-left">
+        <i class="fa-solid fa-bolt neon"></i>
+        <span>Advanced Recon Panel</span>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-end h-100 pe-3 gap-3" style="position:absolute; right:0; top:0; width:auto;">
+        <div class="d-flex align-items-center gap-3">
+          <i class="fa-solid fa-bell" style="color:rgba(215,230,242,0.9);"></i>
+          <div class="d-flex align-items-center gap-2">
+            <span style="font-weight:700; color:rgba(215,230,242,0.9);">User</span>
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(39,255,119,0.12);border:1px solid rgba(39,255,119,0.35); display:flex; align-items:center; justify-content:center; box-shadow:0 0 18px rgba(39,255,119,0.18);">
+              <i class="fa-solid fa-user neon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container-fluid">
+        <div class="row g-3">
+          <!-- Title -->
+          <div class="col-12">
+            <div class="panel p-4">
+              <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                  <h2 class="mb-1"><span class="neon">Domain name</span></h2>
+                  <div id="domainNameLine" style="color:rgba(215,230,242,0.75); font-weight:800;">
+                    {{ domain_name or domain or target or '—' }}
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button id="copyBtn" class="btn btn-outline-neon">
+                    <i class="fa-solid fa-copy me-2"></i>Copy
+                  </button>
+                  <a id="downloadBtn" class="btn btn-neon px-4" role="button" download="whois.txt" href="#">
+                    <i class="fa-solid fa-download me-2"></i>Download TXT
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs + WHOIS cards -->
+          <div class="col-12">
+            <div class="panel p-4">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h5 class="mb-0">Structured Results</h5>
+                <span class="badge" style="border-radius:999px; border:1px solid rgba(39,255,119,0.35); background:rgba(39,255,119,0.08); color: var(--neon);">
+                  WHOIS / DNS / NSLOOKUP / DIG
+                </span>
+              </div>
+
+              <div class="tabs mt-3 d-flex flex-wrap gap-2" role="tablist" aria-label="Result Tabs">
+                <a class="tab-btn active" id="tab-whois" data-bs-toggle="tab" href="#pane-whois" role="tab" aria-controls="pane-whois" aria-selected="true">
+                  <i class="fa-solid fa-signature"></i> WHOIS
+                </a>
+                <a class="tab-btn" id="tab-dns" data-bs-toggle="tab" href="#pane-dns" role="tab" aria-controls="pane-dns" aria-selected="false">
+                  <i class="fa-solid fa-globe"></i> DNS
+                </a>
+                <a class="tab-btn" id="tab-nslookup" data-bs-toggle="tab" href="#pane-nslookup" role="tab" aria-controls="pane-nslookup" aria-selected="false">
+                  <i class="fa-solid fa-diagram-project"></i> NSLOOKUP
+                </a>
+                <a class="tab-btn" id="tab-dig" data-bs-toggle="tab" href="#pane-dig" role="tab" aria-controls="pane-dig" aria-selected="false">
+                  <i class="fa-solid fa-compass-drafting"></i> DIG
+                </a>
+              </div>
+
+              <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="pane-whois" role="tabpanel" aria-labelledby="tab-whois">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="kv-card">
+                        <div class="kv">
+                          <div class="k">Registrar</div>
+                          <div class="v">{{ whois_registrar or registrar or '—' }}</div>
+
+                          <div class="k">Created Date</div>
+                          <div class="v">{{ whois_created or created_date or created or '—' }}</div>
+
+                          <div class="k">Expiry</div>
+                          <div class="v">{{ whois_expiry or expiry_date or expires or '—' }}</div>
+
+                          <div class="k">Name Servers</div>
+                          <div class="v">
+                            {% if name_servers or whois_nameservers %}
+                              {% set ns_list = name_servers or whois_nameservers %}
+                              {% if ns_list is string %}
+                                {{ ns_list }}
+                              {% else %}
+                                <div class="d-flex flex-wrap gap-2">
+                                  {% for ns in ns_list %}
+                                    <span class="badge" style="border-radius:999px; border:1px solid rgba(0,255,120,0.18); background: rgba(255,255,255,0.02); color: rgba(215,230,242,0.95);">{{ ns }}</span>
+                                  {% endfor %}
+                                </div>
+                              {% endif %}
+                            {% else %}
+                              —
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Optional raw blocks placeholders -->
+                    <div class="col-12">
+                      <div class="panel p-3" style="background: rgba(255,255,255,0.02); border-color: rgba(0,255,120,0.10);">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <div style="font-weight:900;">WHOIS Output</div>
+                          <span style="color:rgba(215,230,242,0.7); font-size:0.9rem;">(if provided)</span>
+                        </div>
+                        <pre id="whoisRaw" class="mt-2" style="white-space:pre-wrap; word-break:break-word; color: rgba(215,230,242,0.9); background: rgba(255,255,255,0.02); border:1px solid rgba(0,255,120,0.10); border-radius:14px; padding:14px; margin:0; min-height:120px;">{{ whois_raw or whois_text or 'No raw WHOIS data available.' }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DNS Lookup -->
+                <div class="tab-pane fade" id="pane-dns" role="tabpanel" aria-labelledby="tab-dns">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div style="font-weight:900;">DNS Lookup</div>
+                        <span style="color:rgba(215,230,242,0.7); font-size:0.9rem;">Records</span>
+                      </div>
+
+                      <div class="panel p-3" style="background: rgba(255,255,255,0.02); border-color: rgba(0,255,120,0.10);">
+                        <div class="table-responsive">
+                          <table class="table table-dark table-hover align-middle" style="margin-bottom:0;">
+                            <thead>
+                              <tr>
+                                <th style="width: 34%; color: rgba(215,230,242,0.9);">Record</th>
+                                <th style="color: rgba(215,230,242,0.9);">Value</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td style="color: rgba(39,255,119,0.95); font-weight:900;">A Records</td>
+                                <td>
+                                  {% if dns_a or a_records %}
+                                    {% set a_list = dns_a or a_records %}
+                                    {% if a_list is string %}
+                                      {{ a_list }}
+                                    {% else %}
+                                      <div class="d-flex flex-wrap gap-2">
+                                        {% for v in a_list %}
+                                          <span class="badge" style="border-radius:999px; border:1px solid rgba(39,255,119,0.18); background: rgba(255,255,255,0.02); color: rgba(215,230,242,0.95);">{{ v }}</span>
+                                        {% endfor %}
+                                      </div>
+                                    {% endif %}
+                                  {% else %}
+                                    —
+                                  {% endif %}
+                                </td>
+                              </tr>
+
+                              <tr>
+                                <td style="color: rgba(39,255,119,0.95); font-weight:900;">MX Records</td>
+                                <td>
+                                  {% if dns_mx or mx_records %}
+                                    {% set mx_list = dns_mx or mx_records %}
+                                    {% if mx_list is string %}
+                                      {{ mx_list }}
+                                    {% else %}
+                                      <div class="d-flex flex-wrap gap-2">
+                                        {% for v in mx_list %}
+                                          {% if v is mapping %}
+                                            <span class="badge" style="border-radius:999px; border:1px solid rgba(39,255,119,0.18); background: rgba(255,255,255,0.02); color: rgba(215,230,242,0.95);">{{ v.priority or v.pref or '' }} {{ v.exchange or v.host or v.value or v.name or '' }}</span>
+                                          {% else %}
+                                            <span class="badge" style="border-radius:999px; border:1px solid rgba(39,255,119,0.18); background: rgba(255,255,255,0.02); color: rgba(215,230,242,0.95);">{{ v }}</span>
+                                          {% endif %}
+                                        {% endfor %}
+                                      </div>
+                                    {% endif %}
+                                  {% else %}
+                                    —
+                                  {% endif %}
+                                </td>
+                              </tr>
+
+                              <tr>
+                                <td style="color: rgba(39,255,119,0.95); font-weight:900;">CNAME</td>
+                                <td>
+                                  {{ dns_cname or cname or '—' }}
+                                </td>
+                              </tr>
+
+                              <tr>
+                                <td style="color: rgba(39,255,119,0.95); font-weight:900;">TXT</td>
+                                <td>
+                                  {% if dns_txt or txt_records %}
+                                    {% set txt_list = dns_txt or txt_records %}
+                                    {% if txt_list is string %}
+                                      {{ txt_list }}
+                                    {% else %}
+                                      <div class="d-flex flex-wrap gap-2">
+                                        {% for v in txt_list %}
+                                          <span class="badge" style="border-radius:999px; border:1px solid rgba(39,255,119,0.18); background: rgba(255,255,255,0.02); color: rgba(215,230,242,0.95);">{{ v }}</span>
+                                        {% endfor %}
+                                      </div>
+                                    {% endif %}
+                                  {% else %}
+                                    —
+                                  {% endif %}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                          <button id="copyDnsBtn" class="btn btn-outline-neon">
+                            <i class="fa-solid fa-copy me-2"></i>Copy
+                          </button>
+                          <a id="downloadDnsBtn" class="btn btn-neon px-4" role="button" download="dns.txt" href="#">
+                            <i class="fa-solid fa-download me-2"></i>Download TXT
+                          </a>
+                        </div>
+
+                        <pre id="dnsRaw" class="mt-3" style="white-space:pre-wrap; word-break:break-word; color: rgba(215,230,242,0.9); background: rgba(255,255,255,0.02); border:1px solid rgba(0,255,120,0.10); border-radius:14px; padding:14px; margin:0; min-height:90px;">{{ dns_raw or dns_text or 'No raw DNS output available.' }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- NSLOOKUP -->
+                <div class="tab-pane fade" id="pane-nslookup" role="tabpanel" aria-labelledby="tab-nslookup">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div style="font-weight:900;">NSLOOKUP Output</div>
+                        <span style="color:rgba(215,230,242,0.7); font-size:0.9rem;">if provided</span>
+                      </div>
+
+                      <div class="panel p-3" style="background: rgba(255,255,255,0.02); border-color: rgba(0,255,120,0.10);">
+                        <div class="d-flex gap-2">
+                          <button id="copyNsBtn" class="btn btn-outline-neon">
+                            <i class="fa-solid fa-copy me-2"></i>Copy
+                          </button>
+                          <a id="downloadNsBtn" class="btn btn-neon px-4" role="button" download="nslookup.txt" href="#">
+                            <i class="fa-solid fa-download me-2"></i>Download TXT
+                          </a>
+                        </div>
+
+                        <pre id="nsRaw" class="mt-3" style="white-space:pre-wrap; word-break:break-word; color: rgba(215,230,242,0.9); background: rgba(255,255,255,0.02); border:1px solid rgba(0,255,120,0.10); border-radius:14px; padding:14px; margin:0; min-height:120px;">{{ nslookup_raw or nslookup_text or 'No NSLOOKUP output available.' }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIG -->
+                <div class="tab-pane fade" id="pane-dig" role="tabpanel" aria-labelledby="tab-dig">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div style="font-weight:900;">DIG</div>
+                        <span style="color:rgba(215,230,242,0.7); font-size:0.9rem;">Raw & Parsed</span>
+                      </div>
+
+                      <div class="panel p-3" style="background: rgba(255,255,255,0.02); border-color: rgba(0,255,120,0.10);">
+                        <div class="tabs mt-0 d-flex flex-wrap gap-2" role="tablist" aria-label="DIG tabs">
+                          <a class="tab-btn active" id="tab-dig-raw" data-bs-toggle="tab" href="#pane-dig-raw" role="tab" aria-controls="pane-dig-raw" aria-selected="true">
+                            <i class="fa-solid fa-terminal"></i> Raw
+                          </a>
+                          <a class="tab-btn" id="tab-dig-parsed" data-bs-toggle="tab" href="#pane-dig-parsed" role="tab" aria-controls="pane-dig-parsed" aria-selected="false">
+                            <i class="fa-solid fa-diagram-project"></i> Parsed
+                          </a>
+                        </div>
+
+                        <div class="tab-content mt-3">
+                          <div class="tab-pane fade show active" id="pane-dig-raw" role="tabpanel" aria-labelledby="tab-dig-raw">
+                            <div class="d-flex gap-2 mb-2">
+                              <button id="copyDigRawBtn" class="btn btn-outline-neon">
+                                <i class="fa-solid fa-copy me-2"></i>Copy
+                              </button>
+                              <a id="downloadDigRawBtn" class="btn btn-neon px-4" role="button" download="dig-raw.txt" href="#">
+                                <i class="fa-solid fa-download me-2"></i>Download TXT
+                              </a>
+                            </div>
+
+                            <pre id="digRaw" class="mt-1" style="white-space:pre-wrap; word-break:break-word; color: rgba(215,230,242,0.92); background: #070a12; border:1px solid rgba(0,255,120,0.18); border-radius:14px; padding:14px; margin:0; min-height:160px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">{{ dig_raw or dig_text or 'No DIG raw output available.' }}</pre>
+                          </div>
+
+                          <div class="tab-pane fade" id="pane-dig-parsed" role="tabpanel" aria-labelledby="tab-dig-parsed">
+                            <div class="d-flex gap-2 mb-2">
+                              <button id="copyDigParsedBtn" class="btn btn-outline-neon">
+                                <i class="fa-solid fa-copy me-2"></i>Copy
+                              </button>
+                              <a id="downloadDigParsedBtn" class="btn btn-neon px-4" role="button" download="dig-parsed.txt" href="#">
+                                <i class="fa-solid fa-download me-2"></i>Download TXT
+                              </a>
+                            </div>
+
+                            <div id="digParsedWrap" style="display:none;">
+                              <pre id="digParsed" style="white-space:pre-wrap; word-break:break-word; color: rgba(215,230,242,0.95); background: rgba(255,255,255,0.02); border:1px solid rgba(0,255,120,0.10); border-radius:14px; padding:14px; margin:0; min-height:120px;">{{ dig_parsed or dig_parsed_text or 'No parsed DIG data available.' }}</pre>
+                            </div>
+
+                            <div style="color:rgba(215,230,242,0.75);">
+                              {{ dig_parsed or dig_parsed_text or '' and '' }}
+                              {% if dig_parsed or dig_parsed_text %}
+                              
+                              {% else %}
+                                Parsed data not provided.
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bootstrap JS (for tabs) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      (function () {
+        const domainName = ("{{ domain_name or domain or target or '—' }}").trim();
+        const registrar = ("{{ whois_registrar or registrar or '—' }}").trim();
+        const created = ("{{ whois_created or created_date or created or '—' }}").trim();
+        const expiry = ("{{ whois_expiry or expiry_date or expires or '—' }}").trim();
+
+        const whoisNs = "";
+        // Build Name Servers text from rendered badges (fallback to placeholders)
+        const nsContainer = document.querySelector('#pane-whois .v');
+        const badges = document.querySelectorAll('#pane-whois .v .badge');
+        let nameServersText = "—";
+        if (badges && badges.length > 0) {
+          nameServersText = Array.from(badges).map(b => b.textContent.trim()).filter(Boolean).join(', ');
+        } else {
+          // Try to find a plain text name server field (in case no badges were rendered)
+          nameServersText = ("{{ name_servers or whois_nameservers or '—' }}").trim();
+        }
+
+        const structured = [
+          `Domain: ${domainName}`,
+          `Registrar: ${registrar}`,
+          `Created Date: ${created}`,
+          `Expiry: ${expiry}`,
+          `Name Servers: ${nameServersText}`,
+        ].join('\n');
+
+        // Copy
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(structured);
+            copyBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Copied';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<i class="fa-solid fa-copy me-2"></i>Copy';
+            }, 1200);
+          } catch (e) {
+            // Fallback: prompt
+            window.prompt('Copy WHOIS structured data:', structured);
+          }
+        });
+
+        // Download
+        const downloadBtn = document.getElementById('downloadBtn');
+        const blob = new Blob([structured], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        downloadBtn.href = url;
+
+        downloadBtn.addEventListener('click', () => {
+          // Revoke after a short delay to allow download
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
+
+        // DNS Copy/Download
+        const dnsCopyBtn = document.getElementById('copyDnsBtn');
+        const dnsDownloadBtn = document.getElementById('downloadDnsBtn');
+        const dnsRaw = document.getElementById('dnsRaw');
+
+        if (dnsCopyBtn && dnsDownloadBtn && dnsRaw) {
+          const dnsText = dnsRaw.textContent.trim();
+          dnsCopyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(dnsText);
+              dnsCopyBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Copied';
+              setTimeout(() => {
+                dnsCopyBtn.innerHTML = '<i class="fa-solid fa-copy me-2"></i>Copy';
+              }, 1200);
+            } catch (e) {
+              window.prompt('Copy DNS output:', dnsText);
+            }
+          });
+
+          const dnsBlob = new Blob([dnsText], { type: 'text/plain;charset=utf-8' });
+          const dnsUrl = URL.createObjectURL(dnsBlob);
+          dnsDownloadBtn.href = dnsUrl;
+          dnsDownloadBtn.addEventListener('click', () => {
+            setTimeout(() => URL.revokeObjectURL(dnsUrl), 1000);
+          });
+        }
+
+        // NSLOOKUP Copy/Download
+        const nsCopyBtn = document.getElementById('copyNsBtn');
+        const nsDownloadBtn = document.getElementById('downloadNsBtn');
+        const nsRaw = document.getElementById('nsRaw');
+
+        if (nsCopyBtn && nsDownloadBtn && nsRaw) {
+          const nsText = nsRaw.textContent.trim();
+          nsCopyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(nsText);
+              nsCopyBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Copied';
+              setTimeout(() => {
+                nsCopyBtn.innerHTML = '<i class="fa-solid fa-copy me-2"></i>Copy';
+              }, 1200);
+            } catch (e) {
+              window.prompt('Copy NSLOOKUP output:', nsText);
+            }
+          });
+
+          const nsBlob = new Blob([nsText], { type: 'text/plain;charset=utf-8' });
+          const nsUrl = URL.createObjectURL(nsBlob);
+          nsDownloadBtn.href = nsUrl;
+          nsDownloadBtn.addEventListener('click', () => {
+            setTimeout(() => URL.revokeObjectURL(nsUrl), 1000);
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+
